@@ -1,5 +1,7 @@
 const pdfParse = require('pdf-parse');
 const Resume = require('../models/Resume');
+const { analyzeResumeText } = require('../services/resumeAnalysisService');
+const { upsertVector } = require('../services/vectorService');
 
 // POST /api/resume/upload
 const uploadResume = async (req, res) => {
@@ -47,11 +49,6 @@ const uploadResume = async (req, res) => {
   }
 };
 
-module.exports = { uploadResume };
-
-
-const { analyzeResumeText } = require('../services/resumeAnalysisService');
-
 // POST /api/resume/analyze
 const analyzeResume = async (req, res) => {
   try {
@@ -67,6 +64,21 @@ const analyzeResume = async (req, res) => {
     resume.parsedExperience = experience;
     resume.parsedProjects = projects;
     await resume.save();
+
+    const embeddingText = [
+      resume.parsedSkills.join(', '),
+      resume.parsedExperience.map((entry) => `${entry.title} at ${entry.company}: ${entry.description}`).join('. '),
+      resume.parsedProjects.map((project) => `${project.name}: ${project.description}`).join('. '),
+    ].join('. ');
+
+    try {
+      await upsertVector(resume._id.toString(), embeddingText, {
+        type: 'resume',
+        userId: req.user._id.toString(),
+      });
+    } catch (vectorError) {
+      console.error('Resume vector indexing failed:', vectorError.message);
+    }
 
     res.json({
       message: 'Resume analyzed successfully',

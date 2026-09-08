@@ -6,6 +6,7 @@ const resumeSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  originalFileName: String,
   fileUrl: String,
   rawText: {
     type: String, // extracted text from the PDF, used for AI parsing
@@ -16,6 +17,22 @@ const resumeSchema = new mongoose.Schema({
   extractedProjects: [{
     title: String,
     description: String,
+  }],
+  parsedSkills: [{
+    type: String,
+  }],
+  parsedExperience: [{
+    title: String,
+    company: String,
+    duration: String,
+    description: String,
+  }],
+  parsedProjects: [{
+    name: String,
+    description: String,
+    techUsed: [{
+      type: String,
+    }],
   }],
   targetRole: {
     type: String,

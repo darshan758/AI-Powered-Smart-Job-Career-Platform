@@ -62,4 +62,24 @@ const calculateSkillGap = (userSkills, jobRole) => {
   };
 };
 
-module.exports = { calculateSkillGap };
+const calculateSkillOverlap = (userSkills, jobSkills) => {
+  const normalizedUserSkills = new Set(userSkills.map(normalizeSkill));
+
+  const matched = [];
+  const missing = [];
+
+  jobSkills.forEach((skill) => {
+    if (normalizedUserSkills.has(normalizeSkill(skill))) {
+      matched.push(skill);
+    } else {
+      missing.push(skill);
+    }
+  });
+
+  const overlapPercentage =
+    jobSkills.length === 0 ? 0 : Math.round((matched.length / jobSkills.length) * 100);
+
+  return { matched, missing, overlapPercentage };
+};
+
+module.exports = { calculateSkillGap, normalizeSkill, calculateSkillOverlap };

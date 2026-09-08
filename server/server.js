@@ -9,6 +9,16 @@ const resumeRoutes = require('./routes/resumeRoutes');
 
 const jobRoleRoutes = require('./routes/jobRoleRoutes');
 
+const roadmapRoutes = require('./routes/roadmapRoutes');
+
+const jobPostingRoutes = require('./routes/jobPostingRoutes');
+
+const matchRoutes = require('./routes/matchRoutes');
+
+const chatRoutes = require('./routes/chatRoutes');
+
+const adminRoutes = require('./routes/adminRoutes');
+
 connectDB();
 
 const app = express();
@@ -17,12 +27,26 @@ app.use(express.json());
 
 app.use('/api/jobroles', jobRoleRoutes);
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'Server is running' });
-});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/resume', resumeRoutes);
+
+app.use('/api/roadmap', roadmapRoutes);
+
+app.use('/api/jobpostings', jobPostingRoutes);
+
+app.use('/api/match', matchRoutes);
+
+app.use('/api/chat', chatRoutes);
+
+app.use('/api/admin', adminRoutes);
+
+
+
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'Server is running' });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
