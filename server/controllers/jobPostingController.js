@@ -25,11 +25,15 @@ const createJobPosting = async (req, res) => {
 
     const embeddingText = `${title} at ${company}. Required skills: ${extractedSkills.join(', ')}. ${rawDescription}`;
 
-    await upsertVector(jobPosting._id.toString(), embeddingText, {
-      type: 'job',
-      title: jobPosting.title,
-      company: jobPosting.company,
-    });
+    try {
+      await upsertVector(jobPosting._id.toString(), embeddingText, {
+        type: 'job',
+        title: jobPosting.title,
+        company: jobPosting.company,
+      });
+    } catch (vectorError) {
+      console.error('Job posting vector indexing failed:', vectorError.message);
+    }
 
     res.status(201).json(jobPosting);
   } catch (error) {

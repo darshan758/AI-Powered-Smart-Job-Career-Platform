@@ -30,7 +30,7 @@ const findSimilar = async (text, topK = 5, filter = {}) => {
 
 // Fetch a specific vector by its ID (no search, just direct lookup)
 const getVectorById = async (id) => {
-  const result = await pineconeIndex.fetch([id]);
+  const result = await pineconeIndex.fetch({ ids: [id] });
   const record = result.records[id];
   return record ? record.values : null;
 };

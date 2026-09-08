@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAllUsers, deleteJobPosting } from '../src/api/adminApi';
 import { getAllJobPostings } from '../src/api/jobPostingApi';
+import JobPostingForm from '../components/JobPostingForm';
 
 function Admin() {
   const [users, setUsers] = useState([]);
@@ -24,11 +25,19 @@ function Admin() {
     setPostings((prev) => prev.filter((p) => p._id !== id));
   };
 
+  const handlePostingCreated = (newPosting) => {
+    setPostings((prev) => [newPosting, ...prev]);
+  };
+
   if (loading) return <div className="p-8 text-center text-gray-500">Loading admin data...</div>;
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+
+      <div className="mb-6">
+        <JobPostingForm onCreated={handlePostingCreated} />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">

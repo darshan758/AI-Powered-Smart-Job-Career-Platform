@@ -85,8 +85,10 @@ function Jobs() {
                   </div>
 
                   <div className="text-xs text-gray-500 mb-2">
-                    Skill overlap: {matchData.breakdown.skillOverlapScore}% · Semantic fit:{' '}
-                    {matchData.breakdown.semanticSimilarityScore}%
+                    Skill overlap: {matchData.breakdown.skillOverlapScore}% ·{' '}
+                    {matchData.semanticAvailable === false
+                      ? 'Semantic fit unavailable'
+                      : `Semantic fit: ${matchData.breakdown.semanticSimilarityScore}%`}
                   </div>
 
                   {matchData.missingSkills.length > 0 && (

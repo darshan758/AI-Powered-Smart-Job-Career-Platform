@@ -18,6 +18,7 @@ const matchRoutes = require('./routes/matchRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 
 const adminRoutes = require('./routes/adminRoutes');
+const atsRoutes = require('./routes/atsRoutes');
 
 connectDB();
 
@@ -40,6 +41,7 @@ app.use('/api/match', matchRoutes);
 app.use('/api/chat', chatRoutes);
 
 app.use('/api/admin', adminRoutes);
+app.use('/api/ats', atsRoutes);
 
 
 

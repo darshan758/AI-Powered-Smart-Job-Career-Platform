@@ -1,5 +1,6 @@
 const express = require('express');
 const { protect } = require('../middleware/authMiddleware');
+const { adminOnly } = require('../middleware/adminMiddleware');
 const {
   createJobPosting,
   getAllJobPostings,
@@ -9,11 +10,9 @@ const {
 
 const router = express.Router();
 
-router.post('/', protect, createJobPosting);
+router.post('/', protect, adminOnly, createJobPosting);
 router.get('/', getAllJobPostings);
 router.get('/:id', getJobPostingById);
-
-const { adminOnly } = require('../middleware/adminMiddleware');
 
 router.delete('/:id', protect, adminOnly, deleteJobPosting);
 

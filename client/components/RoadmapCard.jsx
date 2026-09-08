@@ -1,33 +1,30 @@
 import { useState, useEffect } from 'react';
 import { generateRoadmap, getMyRoadmaps, toggleRoadmapItem } from '../src/api/roadmapApi';
 
-function RoadmapCard({ selectedRoleId }) {
-  const [roadmap, setRoadmap] = useState(null);
+function RoadmapCard({ roleId, roleTitle }) {
+  const [allRoadmaps, setAllRoadmaps] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingList, setLoadingList] = useState(true);
   const [error, setError] = useState('');
 
-  const loadExistingRoadmap = async () => {
-    const res = await getMyRoadmaps();
-    // Find a roadmap matching the currently selected role, if one already exists
-    const existing = res.data.find((r) => r._id); // we'll refine matching below
-    if (existing) setRoadmap(existing);
-  };
-
   useEffect(() => {
-    const loadRoadmap = async () => {
-      await loadExistingRoadmap();
-    };
-
-    loadRoadmap();
+    getMyRoadmaps()
+      .then((res) => setAllRoadmaps(res.data))
+      .catch((err) => setError(err.response?.data?.message || 'Could not load roadmaps.'))
+      .finally(() => setLoadingList(false));
   }, []);
 
+  const currentRoadmap = allRoadmaps.find((roadmap) => roadmap.targetRole === roleTitle);
+
   const handleGenerate = async () => {
-    if (!selectedRoleId) return;
     setLoading(true);
     setError('');
     try {
-      const res = await generateRoadmap(selectedRoleId);
-      setRoadmap(res.data);
+      const res = await generateRoadmap(roleId);
+      setAllRoadmaps((prev) => [
+        ...prev.filter((roadmap) => roadmap.targetRole !== roleTitle),
+        res.data,
+      ]);
     } catch (err) {
       setError(err.response?.data?.message || 'Could not generate roadmap.');
     } finally {
@@ -36,27 +33,38 @@ function RoadmapCard({ selectedRoleId }) {
   };
 
   const handleToggle = async (itemId) => {
-    const res = await toggleRoadmapItem(roadmap._id, itemId);
-    // Update just that one item locally, so the UI feels instant
-    setRoadmap((prev) => ({
-      ...prev,
-      items: prev.items.map((item) =>
-        item._id === itemId ? { ...item, completed: res.data.item.completed } : item
-      ),
-    }));
+    const res = await toggleRoadmapItem(currentRoadmap._id, itemId);
+    setAllRoadmaps((prev) => prev.map((roadmap) => (
+      roadmap._id === currentRoadmap._id
+        ? {
+            ...roadmap,
+            items: roadmap.items.map((item) =>
+              item._id === itemId ? { ...item, completed: res.data.item.completed } : item
+            ),
+          }
+        : roadmap
+    )));
   };
 
   const priorityColor = { high: 'bg-red-100 text-red-700', medium: 'bg-yellow-100 text-yellow-700', low: 'bg-gray-100 text-gray-700' };
 
+  if (loadingList) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow">
+        <p className="text-sm text-gray-500">Loading roadmap...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-lg font-semibold mb-3">Learning Roadmap</h2>
+      <h2 className="text-lg font-semibold mb-3">Learning Roadmap - {roleTitle}</h2>
 
-      {!roadmap && (
+      {!currentRoadmap && (
         <>
           <button
             onClick={handleGenerate}
-            disabled={!selectedRoleId || loading}
+            disabled={loading}
             className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? 'Generating with AI...' : 'Generate Roadmap'}
@@ -65,9 +73,9 @@ function RoadmapCard({ selectedRoleId }) {
         </>
       )}
 
-      {roadmap && roadmap.items?.length > 0 && (
+      {currentRoadmap && currentRoadmap.items?.length > 0 && (
         <ul className="space-y-2">
-          {roadmap.items.map((item) => (
+          {currentRoadmap.items.map((item) => (
             <li key={item._id} className="flex items-start gap-3 border-b pb-2">
               <input
                 type="checkbox"
@@ -89,6 +97,10 @@ function RoadmapCard({ selectedRoleId }) {
             </li>
           ))}
         </ul>
+      )}
+
+      {currentRoadmap && currentRoadmap.items?.length === 0 && (
+        <p className="text-sm text-gray-500">No skill gaps for this role - you are fully matched!</p>
       )}
     </div>
   );

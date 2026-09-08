@@ -7,7 +7,7 @@ import RoadmapCard from '../components/RoadmapCard';
 function Dashboard() {
   const { user, logoutUser } = useAuth();
   const [resumeAnalyzed, setResumeAnalyzed] = useState(false);
-  const [selectedRoleId, setSelectedRoleId] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -24,9 +24,11 @@ function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ResumeUpload onAnalyzed={() => setResumeAnalyzed(true)} />
 
-        {resumeAnalyzed && <SkillGapCard onRoleSelected={setSelectedRoleId} />}
+        {resumeAnalyzed && <SkillGapCard onRoleSelected={setSelectedRole} />}
 
-        {selectedRoleId && <RoadmapCard selectedRoleId={selectedRoleId} />}
+        {selectedRole && (
+          <RoadmapCard roleId={selectedRole._id} roleTitle={selectedRole.title} />
+        )}
       </div>
     </div>
   );

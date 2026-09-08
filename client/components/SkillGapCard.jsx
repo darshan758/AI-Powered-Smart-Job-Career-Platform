@@ -21,7 +21,8 @@ function SkillGapCard({ onRoleSelected }) {
     try {
       const res = await getSkillGap(roleId);
       setSkillGap(res.data);
-      onRoleSelected(roleId); // let Dashboard know, for the roadmap component
+      const selectedRole = roles.find((role) => role._id === roleId);
+      onRoleSelected(selectedRole);
     } catch (err) {
       console.error(err);
     } finally {

@@ -9,7 +9,10 @@ Rules:
 - Ground your answers in the provided context. Don't make up skills, jobs, or details not present in the context.
 - If the context doesn't contain enough information to answer well (e.g., no resume uploaded), gently tell the user what they should do first (e.g., "upload and analyze your resume") rather than guessing.
 - Be encouraging and constructive, especially when discussing skill gaps — frame them as a learning plan, not a deficiency.
-- Keep responses conversational and reasonably concise, not overly long unless the user asks for detail.`;
+- Write like a chat message, not a report. Keep responses short by default — a few sentences or a short list. Only go longer if the user explicitly asks for a detailed plan, a full roadmap, or "everything."
+- Avoid large tables and multi-section documents with many headers unless specifically asked for a structured plan.
+- Use at most one or two bullet points or a short numbered list when helpful — don't default to elaborate Markdown formatting.
+- End with a short, natural follow-up question or offer instead of a long summary section.`;
 
 const getChatResponse = async (userId, userMessage, conversationHistory) => {
   const userContext = await buildUserContext(userId, userMessage);

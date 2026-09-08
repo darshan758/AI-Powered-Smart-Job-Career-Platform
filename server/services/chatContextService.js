@@ -29,12 +29,16 @@ const buildUserContext = async (userId, userMessage) => {
 
   // Pull in relevant job postings via vector search, only if resume exists
   if (resume) {
-    const relevantJobs = await findSimilar(userMessage, 3, { type: 'job' });
-    if (relevantJobs.length > 0) {
-      const jobSummaries = relevantJobs
-        .map((j) => `${j.metadata.title} at ${j.metadata.company} (relevance: ${Math.round(j.score * 100)}%)`)
-        .join('; ');
-      contextParts.push(`Potentially relevant job postings: ${jobSummaries}`);
+    try {
+      const relevantJobs = await findSimilar(userMessage, 3, { type: 'job' });
+      if (relevantJobs.length > 0) {
+        const jobSummaries = relevantJobs
+          .map((j) => `${j.metadata.title} at ${j.metadata.company} (relevance: ${Math.round(j.score * 100)}%)`)
+          .join('; ');
+        contextParts.push(`Potentially relevant job postings: ${jobSummaries}`);
+      }
+    } catch (error) {
+      console.error('Job vector search unavailable:', error.message);
     }
   }
 

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { sendMessage, getChatHistory } from '../src/api/chatApi';
 
 function Chat() {
@@ -34,10 +35,12 @@ function Chat() {
       const res = await sendMessage(trimmed);
       const aiMessage = { role: 'assistant', content: res.data.reply };
       setMessages((prev) => [...prev, aiMessage]);
-    } catch {
+    } catch (err) {
+      const backendMessage = err.response?.data?.message;
       const errorMessage = {
         role: 'assistant',
-        content: "Sorry, I couldn't process that. Please try again.",
+        content: backendMessage || 'Sorry, something went wrong. Please try again.',
+        isError: true,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -65,10 +68,18 @@ function Chat() {
               className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${
                 msg.role === 'user'
                   ? 'bg-blue-600 text-white rounded-br-sm'
+                  : msg.isError
+                  ? 'bg-red-50 text-red-700 border border-red-200 rounded-bl-sm'
                   : 'bg-white text-gray-800 rounded-bl-sm shadow'
               }`}
             >
-              {msg.content}
+              {msg.role === 'assistant' ? (
+                <div className="prose prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-table:my-2">
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                </div>
+              ) : (
+                msg.content
+              )}
             </div>
           </div>
         ))}

@@ -16,6 +16,7 @@ import Chat from '../pages/Chat';
 import Admin from '../pages/Admin';
 import AdminRoute from '../components/AdminRoute';
 import Analytics from '../pages/Analytics';
+import AtsScore from '../pages/AtsScore';
 
 
 function App() {
@@ -66,6 +67,14 @@ function App() {
               <AdminRoute>
                 <Analytics />
               </AdminRoute>
+            }
+          />
+          <Route
+            path="/ats"
+            element={
+              <ProtectedRoute>
+                <AtsScore />
+              </ProtectedRoute>
             }
           />
         </Routes>
