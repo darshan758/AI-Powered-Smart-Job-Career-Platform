@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed:roles": "node seed/jobRoles.seed.js"
+    "seed:roles": "node seed/jobRoles.seed.js",
+    "make-admin": "node scripts/makeAdmin.js"
   },
   "keywords": [],
   "author": "",
